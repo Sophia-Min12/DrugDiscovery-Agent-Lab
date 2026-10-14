@@ -1,0 +1,134 @@
+{
+  "n_drugs": 56,
+  "properties": {
+    "mw": {
+      "methods": [
+        "rdkit",
+        "pubchem"
+      ],
+      "tolerance": 0.5,
+      "drugs_where_methods_disagree_beyond_tolerance": 0,
+      "median_spread": 0.014,
+      "max_spread": 0.071,
+      "worst": {
+        "drug": "vancomycin",
+        "values": {
+          "rdkit": 1449.27,
+          "pubchem": 1449.2
+        }
+      }
+    },
+    "logp": {
+      "methods": [
+        "crippen",
+        "xlogp3"
+      ],
+      "tolerance": 0.3,
+      "drugs_where_methods_disagree_beyond_tolerance": 37,
+      "median_spread": 0.447,
+      "max_spread": 4.231,
+      "worst": {
+        "drug": "cyclosporine",
+        "values": {
+          "crippen": 3.27,
+          "xlogp3": 7.5
+        }
+      }
+    },
+    "tpsa": {
+      "methods": [
+        "ertl",
+        "ertl_sp",
+        "pubchem"
+      ],
+      "tolerance": 1.0,
+      "drugs_where_methods_disagree_beyond_tolerance": 15,
+      "median_spread": 0.04,
+      "max_spread": 25.3,
+      "worst": {
+        "drug": "amoxicillin",
+        "values": {
+          "ertl": 132.96,
+          "ertl_sp": 158.26,
+          "pubchem": 158.0
+        }
+      }
+    },
+    "hbd": {
+      "methods": [
+        "lipinski",
+        "rdkit",
+        "pubchem"
+      ],
+      "tolerance": 0.0,
+      "drugs_where_methods_disagree_beyond_tolerance": 11,
+      "median_spread": 0.0,
+      "max_spread": 2.0,
+      "worst": {
+        "drug": "metformin",
+        "values": {
+          "lipinski": 5,
+          "rdkit": 3,
+          "pubchem": 3
+        }
+      }
+    },
+    "hba": {
+      "methods": [
+        "lipinski",
+        "rdkit",
+        "pubchem"
+      ],
+      "tolerance": 0.0,
+      "drugs_where_methods_disagree_beyond_tolerance": 39,
+      "median_spread": 1.0,
+      "max_spread": 11.0,
+      "worst": {
+        "drug": "cyclosporine",
+        "values": {
+          "lipinski": 23,
+          "rdkit": 12,
+          "pubchem": 12
+        }
+      }
+    },
+    "rotb": {
+      "methods": [
+        "rdkit",
+        "pubchem"
+      ],
+      "tolerance": 0.0,
+      "drugs_where_methods_disagree_beyond_tolerance": 12,
+      "median_spread": 0.0,
+      "max_spread": 4.0,
+      "worst": {
+        "drug": "paclitaxel",
+        "values": {
+          "rdkit": 10,
+          "pubchem": 14
+        }
+      }
+    }
+  },
+  "lipinski": {
+    "verdict_depends_on_method": 2,
+    "drugs": {
+      "atorvastatin": {
+        "crippen+lipinski": 2,
+        "crippen+rdkit": 2,
+        "crippen+pubchem": 2,
+        "xlogp3+lipinski": 1,
+        "xlogp3+rdkit": 1,
+        "xlogp3+pubchem": 1
+      },
+      "sofosbuvir": {
+        "crippen+lipinski": 2,
+        "crippen+rdkit": 1,
+        "crippen+pubchem": 2,
+        "xlogp3+lipinski": 2,
+        "xlogp3+rdkit": 1,
+        "xlogp3+pubchem": 2
+      }
+    }
+  }
+}

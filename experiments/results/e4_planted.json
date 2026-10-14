@@ -1,0 +1,50 @@
+{
+  "sentences": 224,
+  "extraction_recall": 1.0,
+  "planted_error_verdicts": {
+    "continuous x0.5": {
+      "supported": 24,
+      "ambiguous": 4
+    },
+    "continuous x2": {
+      "contradicted": 34
+    },
+    "continuous x5": {
+      "contradicted": 29
+    },
+    "continuous x20": {
+      "contradicted": 30
+    },
+    "count x1": {
+      "ambiguous": 1,
+      "contradicted": 49
+    },
+    "count x2": {
+      "contradicted": 51,
+      "ambiguous": 2
+    }
+  },
+  "detection_rate": {
+    "continuous x0.5": 0.0,
+    "continuous x2": 1.0,
+    "continuous x5": 1.0,
+    "continuous x20": 1.0,
+    "count x1": 0.98,
+    "count x2": 0.962
+  },
+  "correct_claim_verdicts": {
+    "prose_named": {
+      "supported": 280
+    },
+    "list_named": {
+      "supported": 280
+    },
+    "inverted_named": {
+      "supported": 224
+    },
+    "prose_unnamed": {
+      "supported": 187,
+      "ambiguous": 93
+    }
+  }
+}

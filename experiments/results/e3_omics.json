@@ -1,0 +1,76 @@
+{
+  "design": {
+    "genes": 2000,
+    "planted_de": 100,
+    "seeds": 20,
+    "nominal_fdr": 0.05
+  },
+  "results": {
+    "cpm_welch_bh": {
+      "3": {
+        "mean_sensitivity": 0.021,
+        "mean_fdp": 0.024,
+        "seeds_with_fdp_over_10pct": 2
+      },
+      "4": {
+        "mean_sensitivity": 0.43,
+        "mean_fdp": 0.03,
+        "seeds_with_fdp_over_10pct": 0
+      },
+      "6": {
+        "mean_sensitivity": 0.794,
+        "mean_fdp": 0.063,
+        "seeds_with_fdp_over_10pct": 3
+      },
+      "10": {
+        "mean_sensitivity": 0.934,
+        "mean_fdp": 0.103,
+        "seeds_with_fdp_over_10pct": 10
+      }
+    },
+    "median_ratio_welch_bh": {
+      "3": {
+        "mean_sensitivity": 0.026,
+        "mean_fdp": 0.055,
+        "seeds_with_fdp_over_10pct": 1
+      },
+      "4": {
+        "mean_sensitivity": 0.428,
+        "mean_fdp": 0.021,
+        "seeds_with_fdp_over_10pct": 0
+      },
+      "6": {
+        "mean_sensitivity": 0.788,
+        "mean_fdp": 0.034,
+        "seeds_with_fdp_over_10pct": 0
+      },
+      "10": {
+        "mean_sensitivity": 0.931,
+        "mean_fdp": 0.043,
+        "seeds_with_fdp_over_10pct": 0
+      }
+    },
+    "fold_change_only": {
+      "3": {
+        "mean_sensitivity": 0.88,
+        "mean_fdp": 0.425,
+        "seeds_with_fdp_over_10pct": 20
+      },
+      "4": {
+        "mean_sensitivity": 0.875,
+        "mean_fdp": 0.347,
+        "seeds_with_fdp_over_10pct": 20
+      },
+      "6": {
+        "mean_sensitivity": 0.89,
+        "mean_fdp": 0.231,
+        "seeds_with_fdp_over_10pct": 20
+      },
+      "10": {
+        "mean_sensitivity": 0.898,
+        "mean_fdp": 0.121,
+        "seeds_with_fdp_over_10pct": 16
+      }
+    }
+  }
+}
