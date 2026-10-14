@@ -1,0 +1,114 @@
+{
+  "conditions": {
+    "closed_book": {
+      "reports": 8,
+      "claims": 54,
+      "supported": 12,
+      "contradicted": 41,
+      "ambiguous": 1,
+      "unverifiable": 0,
+      "unqualified": 0,
+      "contradicted_rate": 0.759,
+      "reports_with_a_wrong_number": 8,
+      "asked_properties_stated": 0.946,
+      "asked_properties_stated_correctly": 0.232,
+      "unattributed_numbers": 0,
+      "mean_llm_calls": 1.0,
+      "mean_seconds": 23.6,
+      "planner_fallbacks": 0,
+      "revised_reports": 0,
+      "revision_fixed_a_wrong_number": 0,
+      "revision_made_it_worse": 0
+    },
+    "closed_book_verified": {
+      "reports": 8,
+      "claims": 69,
+      "supported": 63,
+      "contradicted": 5,
+      "ambiguous": 1,
+      "unverifiable": 0,
+      "unqualified": 0,
+      "contradicted_rate": 0.072,
+      "reports_with_a_wrong_number": 2,
+      "asked_properties_stated": 0.946,
+      "asked_properties_stated_correctly": 0.893,
+      "unattributed_numbers": 0,
+      "mean_llm_calls": 3.0,
+      "mean_seconds": 171.8,
+      "planner_fallbacks": 0,
+      "revised_reports": 8,
+      "revision_fixed_a_wrong_number": 8,
+      "revision_made_it_worse": 0
+    },
+    "tools": {
+      "reports": 8,
+      "claims": 73,
+      "supported": 72,
+      "contradicted": 0,
+      "ambiguous": 1,
+      "unverifiable": 0,
+      "unqualified": 0,
+      "contradicted_rate": 0.0,
+      "reports_with_a_wrong_number": 0,
+      "asked_properties_stated": 1.0,
+      "asked_properties_stated_correctly": 1.0,
+      "unattributed_numbers": 1,
+      "mean_llm_calls": 2.0,
+      "mean_seconds": 66.3,
+      "planner_fallbacks": 0,
+      "revised_reports": 0,
+      "revision_fixed_a_wrong_number": 0,
+      "revision_made_it_worse": 0
+    },
+    "tools_verified": {
+      "reports": 7,
+      "claims": 60,
+      "supported": 57,
+      "contradicted": 3,
+      "ambiguous": 0,
+      "unverifiable": 0,
+      "unqualified": 0,
+      "contradicted_rate": 0.05,
+      "reports_with_a_wrong_number": 1,
+      "asked_properties_stated": 1.0,
+      "asked_properties_stated_correctly": 0.98,
+      "unattributed_numbers": 0,
+      "mean_llm_calls": 3.43,
+      "mean_seconds": 86.2,
+      "planner_fallbacks": 0,
+      "revised_reports": 6,
+      "revision_fixed_a_wrong_number": 0,
+      "revision_made_it_worse": 1
+    }
+  },
+  "closed_book_by_property": {
+    "hba": {
+      "contradicted": 7,
+      "supported": 1
+    },
+    "hbd": {
+      "contradicted": 7,
+      "supported": 1
+    },
+    "lipinski_pass": {
+      "supported": 2,
+      "contradicted": 2,
+      "ambiguous": 1
+    },
+    "logp": {
+      "contradicted": 7,
+      "supported": 2
+    },
+    "mw": {
+      "contradicted": 3,
+      "supported": 5
+    },
+    "rotb": {
+      "contradicted": 7,
+      "supported": 1
+    },
+    "tpsa": {
+      "contradicted": 8
+    }
+  }
+}

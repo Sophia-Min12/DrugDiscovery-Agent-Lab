@@ -102,7 +102,9 @@ def feedback(checks: list[Check], unattributed: list[tuple[int, int, str]], text
             lines.append(f"- {quoted} cannot be checked by any tool ({check.note}). Remove it or say it is unverified.")
     for start, end, number in unattributed:
         context = text[max(0, start - 30):min(len(text), end + 20)].replace("\n", " ")
-        lines.append(f'- the number {number} in "...{context}..." is not backed by any tool. Remove it.')
+        lines.append(f'- the number {number} in "...{context}..." is not tied to any property the tools compute. '
+                     f'If it is a property value, say which property and method it is, e.g. "TPSA 63.6 (PubChem)"; '
+                     f'otherwise remove it.')
     lines.append("Rewrite the whole answer. Keep every correct statement as it is.")
     return "\n".join(lines)
 

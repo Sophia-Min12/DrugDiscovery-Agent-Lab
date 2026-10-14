@@ -110,3 +110,45 @@ def test_a_method_word_that_does_not_fit_the_property_is_ignored():
 def test_short_pass_form_only_in_a_sentence_that_names_the_rule():
     assert claims("According to Lipinski's Rule of Five, ibuprofen passes the rule.")[("ibuprofen", "lipinski_pass")].value == 1
     assert ("ibuprofen", "lipinski_pass") not in claims("Ibuprofen passes the test.")
+
+
+# Regression cases from E5's first run, where extraction misses made the revision loop
+# delete correct values (experiments/results/e5_runs_v1_before_extractor_fix.jsonl).
+
+SILDENAFIL = ("Sildenafil has a molecular weight of 474.59 (RDKit) and 474.6 (PubChem). Its logP values are 1.61 "
+              "(Crippen) and 1.5 (XlogP3). The TPSA values are 113.42 (ERTL), 121.8 (ERTL_SP), and 118.0 (PubChem). "
+              "It has 1 hydrogen-bond donor (Lipinski, RDKit, and PubChem) and 10 hydrogen-bond acceptors (Lipinski), "
+              "7 (RDKit), and 8 (PubChem). There are 7 rotatable bonds (RDKit and PubChem).")
+
+
+def test_a_list_of_values_each_with_its_method_is_read_in_full():
+    from drugagent.verifier import Verifier
+    found = extract(SILDENAFIL, subject="sildenafil")
+    assert found.unattributed == []
+    by_method = {(c.prop, c.method): c.value for c in found.claims}
+    assert by_method[("mw", "pubchem")] == 474.6
+    assert by_method[("tpsa", "ertl_sp")] == 121.8  # not read as plain Ertl
+    assert by_method[("hba", "rdkit")] == 7 and by_method[("hba", "pubchem")] == 8
+    assert all(check.ok for check in Verifier().check_all(found.claims))
+
+
+def test_a_method_in_words_after_a_count():
+    found = claims("It has 7 hydrogen-bond acceptors (Lipinski and PubChem), but only 4 acceptors according to RDKit.",
+                   subject="atorvastatin")
+    assert [c.method for c in extract("but only 4 acceptors according to RDKit.", subject="atorvastatin").claims] == ["rdkit"]
+    assert found[("atorvastatin", "hba")].method in ("lipinski", "rdkit")
+
+
+def test_a_rule_of_five_verdict_takes_the_method_named_in_its_clause():
+    from drugagent.claims import Verdict
+    from drugagent.verifier import Verifier
+    both = ("Atorvastatin does not pass Lipinski's Rule of Five according to Crippen and Lipinski, but it does pass "
+            "according to XlogP3 and Lipinski.")
+    found = extract(both, subject="atorvastatin").claims
+    assert [(c.value, c.method) for c in found] == [(0.0, "crippen+lipinski"), (1.0, "xlogp3+lipinski")]
+    assert all(c.verdict is Verdict.SUPPORTED for c in Verifier().check_all(found))
+    # the revision the first run's feedback provoked - and which really is wrong
+    wrong = ("According to the Crippen and Lipinski method, atorvastatin passes Lipinski's Rule of Five, "
+             "with 0 violations.")
+    verdicts = {c.claim.prop: c.verdict for c in Verifier().check_all(extract(wrong, subject="atorvastatin").claims)}
+    assert verdicts == {"lipinski_pass": Verdict.CONTRADICTED, "lipinski_violations": Verdict.CONTRADICTED}

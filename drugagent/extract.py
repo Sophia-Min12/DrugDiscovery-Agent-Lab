@@ -48,14 +48,16 @@ SCI_AFTER = re.compile(rf"(?P<fill>{FILLER})(?P<num>{SCI})", FLAGS)
 ANY_KEY = re.compile("|".join(f"(?:{key})" for key in KEYS.values()), FLAGS)
 
 # Method names a writer puts in parentheses after a value, and which property each fits.
-METHOD_WORDS = {"wildman-crippen": "crippen", "wildman crippen": "crippen", "crippen": "crippen", "xlogp3": "xlogp3",
-                "xlogp": "xlogp3", "rdkit": "rdkit", "pubchem": "pubchem", "lipinski": "lipinski", "ertl": "ertl"}
-VALID_METHODS = {"logp": {"crippen", "xlogp3"}, "mw": {"rdkit", "pubchem"}, "tpsa": {"ertl", "pubchem"},
+METHOD_WORDS = {"wildman crippen": "crippen", "crippen": "crippen", "xlogp3": "xlogp3", "xlogp": "xlogp3",
+                "rdkit": "rdkit", "pubchem": "pubchem", "lipinski": "lipinski", "ertl": "ertl",
+                "ertl_sp": "ertl_sp", "ertl sp": "ertl_sp", "ertlsp": "ertl_sp"}
+VALID_METHODS = {"logp": {"crippen", "xlogp3"}, "mw": {"rdkit", "pubchem"}, "tpsa": {"ertl", "ertl_sp", "pubchem"},
                  "hbd": {"lipinski", "rdkit", "pubchem"}, "hba": {"lipinski", "rdkit", "pubchem"},
                  "rotb": {"rdkit", "pubchem"}}
 # RDKit's logP *is* Crippen, PubChem's is XLogP3, RDKit's TPSA is Ertl's.
 METHOD_FOR = {("logp", "rdkit"): "crippen", ("logp", "pubchem"): "xlogp3", ("tpsa", "rdkit"): "ertl"}
-METHOD_WORD_RE = re.compile(r"wildman[-\s]crippen|crippen|xlogp3?|rdkit|pubchem|lipinski|ertl", FLAGS)
+METHOD_WORD = r"wildman[-\s]crippen|crippen|xlogp3?|rdkit|pubchem|lipinski|ertl[_\s-]?sp\b|ertl"
+METHOD_WORD_RE = re.compile(METHOD_WORD, FLAGS)
 # "3.5 (XLogP3)": a logP method name alone identifies the property.
 VALUE_THEN_LOGP_METHOD = re.compile(rf"(?P<num>{NUM})\s*\(\s*(?P<m>XLogP3?|Wildman[-\s]Crippen|Crippen)\s*\)", FLAGS)
 
@@ -68,7 +70,14 @@ THRESHOLD = re.compile(r"[<>≤≥]|less\s+than|greater\s+than|more\s+than|below
                        r"threshold|cut-?off|maximum|\bmax\b|up\s+to|at\s+most|no\s+more|not\s+exceed|within", FLAGS)
 INEQUALITY = re.compile(r"(?P<op><|≤|less\s+than|below)\s*$", FLAGS)
 
-METHOD_AFTER = re.compile(r"^\s*(?:g/mol|da|å²|å2|a\^?2)?\s*\((?P<inside>[^()\d]{0,40})\)", FLAGS)
+UNIT = r"(?:\s*(?:g/mol|da|å²|å2|a\^?2))?"
+METHOD_AFTER = re.compile(rf"^{UNIT}\s*\((?P<inside>[^()\d]{{0,40}})\)", FLAGS)
+# "4 acceptors according to RDKit": the method in words rather than parentheses.
+METHOD_PHRASE_AFTER = re.compile(rf"^{UNIT}\s*,?\s*(?:according\s+to|by|per|using|via|from)\s+(?:the\s+)?"
+                                 rf"(?P<inside>{METHOD_WORD})", FLAGS)
+# "306.24 (RDKit) and 306.2 (PubChem)": further values of the same property, each with its method.
+CONTINUATION = re.compile(rf"^(?:\s*,\s*(?:and\s+|or\s+)?|\s+(?:and|or)\s+|\s*;\s*)(?P<num>{NUM}){UNIT}"
+                          rf"\s*\((?P<inside>[^()\d]{{0,40}})\)", FLAGS)
 PLUS_MINUS = re.compile(rf"^\s*(?:log\s?units?|log\s?\(mol/l\)|mol/l)?\s*(?:±|\+/-|\+-)\s*(?P<pm>{NUM})", FLAGS)
 RANGE = re.compile(rf"^[^\d\n]{{0,30}}?(?:\d+\s*%\s*)?(?:prediction\s+|confidence\s+)?(?:interval|CI|range|between)[^\d\n]{{0,12}}?"
                    rf"(?P<lo>{NUM})\s*(?:to|–|—|and|,|\.\.)\s*(?P<hi>{NUM})", FLAGS)
@@ -90,6 +99,15 @@ FAIL_SHORT = re.compile(r"\b(?:fails|violates|does\s+not\s+(?:pass|satisfy|meet)
 PASS_SHORT = re.compile(r"\b(?:passes|satisfies|meets|fulfil+s|obeys|complies\s+with)\s+(?:all\s+(?:of\s+)?)?"
                         r"(?:the|these|its|all)?\s*(?:rules?|criteria|conditions|test)\b", FLAGS)
 NAMES_THE_RULE = re.compile(LIP, FLAGS)
+# "... does not pass according to Crippen and Lipinski, but does pass according to XLogP3 and Lipinski"
+FAIL_BY_METHOD = re.compile(r"\b(?:does\s+not\s+pass|doesn['’]t\s+pass|fails)"
+                            r"(?=\s*,?\s+(?:according\s+to|using|under|with|by)\b)", FLAGS)
+PASS_BY_METHOD = re.compile(r"\b(?:does\s+pass|passes|still\s+passes)"
+                            r"(?=\s*,?\s+(?:according\s+to|using|under|with|by)\b)", FLAGS)
+# The logP x H-bond method a Rule-of-Five verdict was computed under, named in its sentence.
+LIPINSKI_METHOD = re.compile(r"(?:according\s+to|using|with|under|by|for)\s+(?:the\s+)?(?P<logp>crippen|xlogp3?)"
+                             r"(?:\s+log\s?p)?(?:\s*(?:and|\+|/|,)\s*(?:the\s+)?(?P<hb>lipinski|rdkit|pubchem)"
+                             r"(?!['’]s|\s+rule))?", FLAGS)
 VIOLATIONS_RE = re.compile(
     rf"\b(?P<num>{COUNT})\s+(?:{LIP}\s+)?violations?\b"
     rf"|\bviolat\w*\s+(?P<num2>{COUNT})\s+(?:of\s+)?(?:(?:the|its|lipinski['’]s|lipinski)\s+)*(?:rules?|criteria|criterion)", FLAGS)
@@ -128,17 +146,47 @@ def _logp_method(key: str) -> str | None:
     return None
 
 
-def _method_after(prop: str, text: str, end: int) -> tuple[str | None, int]:
-    """A method named in parentheses right after a value: '206.28 (RDKit)', '2 (Lipinski, PubChem)'."""
-    match = METHOD_AFTER.match(text[end:end + 60])
-    if not match:
-        return None, end
-    for word in METHOD_WORD_RE.findall(match.group("inside")):
-        method = METHOD_WORDS[word.lower().replace("-", " ")]
+def _method_in(prop: str, inside: str) -> str | None:
+    """The first method named in `inside` that fits `prop` ('Lipinski' is no method for MW)."""
+    for word in METHOD_WORD_RE.findall(inside):
+        method = METHOD_WORDS[re.sub(r"[-\s]+", " ", word.lower())]
         method = METHOD_FOR.get((prop, method), method)
         if method in VALID_METHODS.get(prop, ()):
-            return method, end + match.end()
+            return method
+    return None
+
+
+def _method_after(prop: str, text: str, end: int) -> tuple[str | None, int]:
+    """A method named right after a value: '206.28 (RDKit)', '2 (Lipinski, PubChem)', '4 according to RDKit'."""
+    for pattern in (METHOD_AFTER, METHOD_PHRASE_AFTER):
+        match = pattern.match(text[end:end + 60])
+        if match:
+            method = _method_in(prop, match.group("inside"))
+            if method is not None:
+                return method, end + match.end()
     return None, end
+
+
+def _continuations(prop: str, text: str, end: int) -> list[tuple[tuple[int, int], dict]]:
+    out = []
+    while True:
+        match = CONTINUATION.match(text[end:end + 80])
+        method = _method_in(prop, match.group("inside")) if match else None
+        if method is None:
+            return out
+        span = (end + match.start("num"), end + match.end())
+        out.append((span, dict(prop=prop, value=_number(match.group("num")), method=method)))
+        end = span[1]
+
+
+def _lipinski_method(text: str, pos: int) -> str | None:
+    lo, hi = _sentence_bounds(text, pos)
+    phrases = sorted(LIPINSKI_METHOD.finditer(text, lo, hi), key=lambda m: abs(m.start() - pos))
+    if not phrases:
+        return None
+    logp = "xlogp3" if phrases[0].group("logp").lower().startswith("x") else "crippen"
+    hb = phrases[0].group("hb")
+    return f"{logp}+{hb.lower()}" if hb else logp
 
 
 def _sentence_bounds(text: str, pos: int) -> tuple[int, int]:
@@ -186,6 +234,8 @@ def extract(text: str, subject: str | None = None, extra_subjects: list[str] | N
                 else "rotb" if "rotat" in key else "heavy_atoms")
         method, end = _method_after(prop, text, match.end())
         raw.append(((match.start(), end), dict(prop=prop, value=_number(match.group("num")), method=method)))
+        if method is not None:
+            raw += _continuations(prop, text, end)
     count_first_spans = [span for span, _ in raw]
 
     # Every key occurrence is tried on its own, so "polar surface area (TPSA) is 37.3"
@@ -220,23 +270,29 @@ def extract(text: str, subject: str | None = None, extra_subjects: list[str] | N
                     fields["interval"] = tuple(sorted((_number(rng.group("lo")), _number(rng.group("hi")))))
                     end += rng.end()
             raw.append(((key.start(), end), fields))
+            if method is not None and prop in VALID_METHODS:
+                raw += _continuations(prop, text, end)
 
     for match in VALUE_THEN_LOGP_METHOD.finditer(text):
-        method = METHOD_WORDS[match.group("m").lower().replace("-", " ")]
+        method = METHOD_WORDS[re.sub(r"[-\s]+", " ", match.group("m").lower())]
         raw.append((match.span(), dict(prop="logp", value=_number(match.group("num")), method=method)))
+        raw += _continuations("logp", text, match.end())
 
     lipinski_spans: list[tuple[int, int]] = []
-    for pattern, value, short in ((FAIL_RE, 0.0, False), (PASS_RE, 1.0, False),
-                                  (FAIL_SHORT, 0.0, True), (PASS_SHORT, 1.0, True)):
+    for pattern, value, short in ((FAIL_RE, 0.0, False), (PASS_RE, 1.0, False), (FAIL_SHORT, 0.0, True),
+                                  (PASS_SHORT, 1.0, True), (FAIL_BY_METHOD, 0.0, True), (PASS_BY_METHOD, 1.0, True)):
         for match in pattern.finditer(text):
             if _overlaps(match.span(), lipinski_spans) or PARTIAL.match(text[match.end():]):
                 continue
             if short and not NAMES_THE_RULE.search(text, *_sentence_bounds(text, match.start())):
                 continue
             lipinski_spans.append(match.span())
-            raw.append((match.span(), dict(prop="lipinski_pass", value=value)))
+            raw.append((match.span(), dict(prop="lipinski_pass", value=value,
+                                           method=_lipinski_method(text, match.start()))))
     for match in VIOLATIONS_RE.finditer(text):
-        raw.append((match.span(), dict(prop="lipinski_violations", value=_number(match.group("num") or match.group("num2")))))
+        count = _number(match.group("num") or match.group("num2"))
+        raw.append((match.span(), dict(prop="lipinski_violations", value=count,
+                                       method=_lipinski_method(text, match.start()))))
     for match in N_SIGNIFICANT.finditer(text):
         raw.append((match.span(), dict(prop="n_significant", value=_number(match.group("num")), subject=dataset)))
 
