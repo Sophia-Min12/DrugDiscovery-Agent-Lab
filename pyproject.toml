@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drugagent"
+version = "0.1.0"
+description = "A drug-discovery agent that checks its own science: every number is recomputed by a tool before it reaches the report."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Sophia Min" }]
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "pandas>=2.0",
+    "matplotlib>=3.8",
+    "rdkit>=2024.3",
+    "langgraph>=1.0",
+]
+
+[project.optional-dependencies]
+mcp = ["mcp>=2.0"]
+gnn = ["torch>=2.2"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+drugagent = "drugagent.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["drugagent*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "docker: needs a running Docker daemon (skipped otherwise)",
+    "ollama: needs a local Ollama server (skipped otherwise)",
+]
