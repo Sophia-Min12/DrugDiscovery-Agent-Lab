@@ -14,7 +14,7 @@
 
 ## The idea
 
-An agent for science rarely fails by not answering. It fails by answering fluently with a number that is wrong, and in drug discovery a wrong logP, a wrong acceptor count or a wrong p-value is an input to a decision. Asked about warfarin from memory, llama3.1:8b gave a TPSA of 124.5 Å² (it is 67.5), four H-bond donors (one) and seven rotatable bonds (four), and concluded that warfarin fails the Rule of Five "as its molecular weight is above 500 g/mol" — four sentences after stating that it is 308.4.
+An agent for science rarely fails by not answering. It fails by answering fluently with a number that is wrong, and in drug discovery a wrong logP, a wrong acceptor count or a wrong p-value is an input to a decision. Asked about warfarin from memory, llama3.1:8b gave a TPSA of 124.5 Å² (it is 67.5), four H-bond donors (one) and seven rotatable bonds (four), and concluded that warfarin fails the Rule of Five "as its molecular weight is above 500 g/mol" — five sentences after stating that it is 308.4.
 
 The rule this repo is built on is the one from [AI-Review-Board-LangGraph](https://github.com/Sophia-Min12/AI-Review-Board-LangGraph): **the LLM proposes, code decides.** The verifier never asks another model whether a claim is right. It extracts the claim, recomputes it with a tool, and returns one of five verdicts. The revision prompt hands the recomputed values back to the model; whatever is still wrong after the last revision is marked inline in the report, never shipped silently.
 
