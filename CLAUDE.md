@@ -1,4 +1,4 @@
-# DrugAgent-Lab — working agreements
+# DrugDiscovery-Agent-Lab — working agreements
 
 ## Commits
 - **Never add `Co-Authored-By: Claude ...` trailers.** Commits are authored by the repo

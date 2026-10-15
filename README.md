@@ -1,6 +1,6 @@
-# DrugAgent-Lab
+# DrugDiscovery-Agent-Lab
 
-![tests](https://github.com/Sophia-Min12/DrugAgent-Lab/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/Sophia-Min12/DrugDiscovery-Agent-Lab/actions/workflows/tests.yml/badge.svg)
 
 **A drug-discovery agent that checks its own science. The LLM plans tool calls and writes the prose; every number it states is recomputed by a deterministic tool before it reaches the reader, and whatever still fails is marked where it stands.**
 

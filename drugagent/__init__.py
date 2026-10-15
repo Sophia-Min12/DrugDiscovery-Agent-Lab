@@ -1,4 +1,4 @@
-"""DrugAgent-Lab: a drug-discovery agent that checks its own science.
+"""DrugDiscovery-Agent-Lab: a drug-discovery agent that checks its own science.
 
 chem / drugs   deterministic cheminformatics, every method-dependent value named
 claims         claims, evidence, the five verdicts
